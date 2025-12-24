@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wypożyczalnia - Home</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- NOWY CSS START (Ciemny Motyw) --- */
+
+      /* 1. Paleta kolorów */
+      :root {
+        --dark-bg: #121212;
+        --dark-card: #1e1e1e;
+        --accent-purple: #bb86fc;
+        --accent-hover: #9955e8;
+        --text-main: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --border-color: #333;
+      }
+
+      /* 2. Nadpisanie tła strony (mimo klasy bg-light w HTML) */
+      body.bg-light {
+        background-color: var(--dark-bg) !important;
+        color: var(--text-main) !important;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* 3. Nadpisanie Navbara */
+      .navbar-dark.bg-dark {
+        background-color: #000000 !important; /* Czerń dla kontrastu */
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      }
+
+      .navbar-brand {
+        font-weight: bold;
+        color: var(--accent-purple) !important;
+        letter-spacing: 1px;
+      }
+
+      /* 4. Nadpisanie Kart (Card) */
+      .card {
+        background-color: var(--dark-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      /* Efekt Hover na karcie */
+      .car-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 20px rgba(187, 134, 252, 0.15); /* Fioletowa poświata */
+        border-color: var(--accent-purple);
+        cursor: pointer;
+      }
+
+      .card-title {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      /* Nadpisanie szarego tekstu Bootstrapa na jaśniejszy */
+      .text-muted {
+        color: var(--text-muted) !important;
+      }
+
+      /* 5. Nadpisanie Przycisków (btn-primary) */
+      .btn-primary {
+        background-color: var(--accent-purple);
+        border-color: var(--accent-purple);
+        color: #000; /* Czarny tekst na fioletowym tle */
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--accent-hover);
+        border-color: var(--accent-hover);
+        color: #fff;
+        box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+      }
+
+      /* 6. Nagłówki */
+      h2 {
+        color: var(--text-main);
+        border-bottom: 2px solid var(--accent-purple);
+        display: inline-block;
+        padding-bottom: 10px;
+      }
+
+      /* 7. Spinner ładowania */
+      .spinner-border.text-primary {
+        color: var(--accent-purple) !important;
+      }
+
+      /* --- NOWY CSS KONIEC --- */
+    </style>
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">🚗 CarRental Pro</a>
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link active" href="index.html">Lista Aut</a>
+          <a class="nav-link" href="add-car.html">Dodaj Auto</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2 class="mb-4">Dostępne Samochody</h2>
+      <div id="carsGrid" class="row g-4">
+        <div class="text-center mt-5">
+          <div class="spinner-border text-primary"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:8080/api";
+
+      async function loadCars() {
+        try {
+          const response = await fetch(`${API_URL}/cars`);
+          const cars = await response.json();
+
+          const grid = document.getElementById("carsGrid");
+          grid.innerHTML = ""; // Czyścimy loader
+
+          if (cars.length === 0) {
+            grid.innerHTML =
+              '<p class="text-center text-muted">Brak aut w bazie. Dodaj pierwsze!</p>';
+            return;
+          }
+
+          cars.forEach((car) => {
+            // Generujemy kartę HTML dla każdego auta
+            const card = `
+                    <div class="col-md-4">
+                        <div class="card car-card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${car.brand} ${
+              car.model
+            }</h5>
+                                <p class="card-text text-muted">ID: ${
+                                  car.id
+                                }</p>
+                                <p class="card-text fs-4 fw-bold" style="color: var(--accent-purple)">${
+                                  car.basePrice ? car.basePrice + " PLN" : "-"
+                                }</p>
+                                <div class="d-grid gap-2">
+                                    <a href="reservation.html?id=${
+                                      car.id
+                                    }&make=${car.brand}&model=${car.model}" 
+                                       class="btn btn-primary">Rezerwuj</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            grid.innerHTML += card;
+          });
+        } catch (error) {
+          console.error(error);
+          document.getElementById("carsGrid").innerHTML =
+            '<div class="alert alert-danger">Błąd połączenia z API</div>';
+        }
+      }
+
+      loadCars();
+    </script>
+  </body>
+</html>

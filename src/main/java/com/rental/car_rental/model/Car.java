@@ -1,5 +1,6 @@
 package com.rental.car_rental.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*; 
 import java.math.BigDecimal;
@@ -35,6 +36,7 @@ public class Car {
     private Long version;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    @JsonIgnore
     @Builder.Default 
     private List<Reservation> reservations = new ArrayList<>();
 }
