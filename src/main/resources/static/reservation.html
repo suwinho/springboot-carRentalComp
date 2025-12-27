@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Rezerwacja Auta</title>
+    <title>Book Car</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
     <style>
-      /* --- NOWY STYL (Deep Dark Theme) --- */
-
       :root {
         --dark-bg: #121212;
         --dark-card: #1e1e1e;
@@ -21,14 +19,12 @@
         --input-bg: #2d2d2d;
       }
 
-      /* Tło strony */
       body.bg-light {
         background-color: var(--dark-bg) !important;
         color: var(--text-main) !important;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
-      /* Navbar */
       .navbar-dark.bg-dark {
         background-color: #000 !important;
         border-bottom: 1px solid var(--border-color);
@@ -41,14 +37,12 @@
         letter-spacing: 1px;
       }
 
-      /* Karta formularza */
       .card {
         background-color: var(--dark-card);
         border: 1px solid var(--border-color);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important; /* Nadpisanie cienia */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
       }
 
-      /* Nagłówek karty (nadpisujemy bg-primary na ciemny z fioletowym tekstem) */
       .card-header.bg-primary {
         background-color: var(--dark-card) !important;
         border-bottom: 1px solid var(--border-color);
@@ -64,7 +58,6 @@
         font-size: 1.2rem;
       }
 
-      /* Pola formularza (Inputy) */
       .form-label {
         color: var(--text-muted);
         font-size: 0.9rem;
@@ -85,13 +78,12 @@
         box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.2);
       }
 
-      /* Naprawa ikony kalendarza w ciemnym motywie (odwrócenie kolorów) */
+      /* Fix calendar icon color */
       ::-webkit-calendar-picker-indicator {
         filter: invert(1);
         cursor: pointer;
       }
 
-      /* Przycisk (nadpisujemy btn-success na fioletowy) */
       .btn-success {
         background-color: var(--accent-purple);
         border-color: var(--accent-purple);
@@ -109,12 +101,10 @@
         box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
       }
 
-      /* Teksty */
       .text-muted {
         color: var(--text-muted) !important;
       }
 
-      /* Alerty (Komunikaty) */
       .alert-success {
         background-color: rgba(3, 218, 198, 0.15);
         border: 1px solid #03dac6;
@@ -132,7 +122,6 @@
         color: #cf6679;
       }
 
-      /* Spinner */
       .spinner-border {
         border-color: var(--accent-purple);
         border-right-color: transparent;
@@ -144,7 +133,7 @@
       <div class="container">
         <a class="navbar-brand" href="index.html">🚗 CarRental Pro</a>
         <div class="navbar-nav ms-auto">
-          <a class="nav-link" href="index.html">Wróć do listy</a>
+          <a class="nav-link" href="index.html">Back to List</a>
         </div>
       </div>
     </nav>
@@ -154,18 +143,18 @@
         <div class="col-md-6">
           <div class="card shadow">
             <div class="card-header bg-primary text-white">
-              <h4 class="mb-0">Formularz Rezerwacji</h4>
+              <h4 class="mb-0">Reservation Form</h4>
             </div>
             <div class="card-body">
               <h5 id="carInfo" class="mb-4 text-center text-muted">
-                Ładowanie danych...
+                Loading data...
               </h5>
 
               <form id="reservationForm">
                 <input type="hidden" id="carId" />
 
                 <div class="mb-3">
-                  <label class="form-label">Data i godzina odbioru</label>
+                  <label class="form-label">Pick-up Date & Time</label>
                   <input
                     type="datetime-local"
                     class="form-control"
@@ -174,7 +163,7 @@
                   />
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Data i godzina zwrotu</label>
+                  <label class="form-label">Return Date & Time</label>
                   <input
                     type="datetime-local"
                     class="form-control"
@@ -184,7 +173,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-success w-100 btn-lg">
-                  Potwierdź rezerwację
+                  Confirm Reservation
                 </button>
               </form>
 
@@ -196,35 +185,35 @@
     </div>
 
     <script>
-      // 1. Pobieramy parametry z URL (to, co po znaku ?)
+      // Get URL params
       const urlParams = new URLSearchParams(window.location.search);
       const carId = urlParams.get("id");
       const make = urlParams.get("make");
       const model = urlParams.get("model");
 
-      // 2. Wypełniamy nagłówek, żeby klient wiedział co rezerwuje
+      // Fill Header info
       if (carId && make) {
         document.getElementById(
           "carInfo"
-        ).innerText = `Rezerwujesz: ${make} ${model}`;
+        ).innerText = `Booking: ${make} ${model}`;
         document.getElementById("carId").value = carId;
       } else {
         document.getElementById("carInfo").innerText =
-          "Błąd: Nie wybrano auta.";
+          "Error: No car selected.";
         document.querySelector("button").disabled = true;
       }
 
-      // 3. Wysyłanie formularza
+      // Handle form submit
       document
         .getElementById("reservationForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
           const messageBox = document.getElementById("messageBox");
           messageBox.innerHTML =
-            '<div class="spinner-border spinner-border-sm"></div> Sprawdzanie dostępności...';
+            '<div class="spinner-border spinner-border-sm"></div> Checking availability...';
 
           const data = {
-            id: document.getElementById("carId").value, // Zgodnie z Twoim ReservationRequest
+            id: document.getElementById("carId").value,
             startTime: document.getElementById("startTime").value,
             endTime: document.getElementById("endTime").value,
           };
@@ -242,17 +231,15 @@
             if (response.ok) {
               messageBox.innerHTML = `
                     <div class="alert alert-success">
-                        Sukces! Auto zarezerwowane. <br>
-                        <a href="index.html" class="alert-link">Wróć do listy</a>
+                        Success! Car reserved. <br>
+                        <a href="index.html" class="alert-link">Back to list</a>
                     </div>`;
-              // Blokujemy przycisk, żeby nie kliknąć 2 razy
               e.target.reset();
             } else {
-              // Tu obsłużymy błąd 500/409 (zajęte auto)
-              messageBox.innerHTML = `<div class="alert alert-danger">Błąd: Auto zajęte w tym terminie lub inny problem.</div>`;
+              messageBox.innerHTML = `<div class="alert alert-danger">Error: Car already booked or invalid dates.</div>`;
             }
           } catch (error) {
-            messageBox.innerHTML = `<div class="alert alert-danger">Błąd połączenia z serwerem.</div>`;
+            messageBox.innerHTML = `<div class="alert alert-danger">Server connection error.</div>`;
           }
         });
     </script>

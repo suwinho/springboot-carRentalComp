@@ -1,8 +1,11 @@
 package com.rental.car_rental.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rental.car_rental.dto.CarRequest;
 import com.rental.car_rental.model.Car;
 import com.rental.car_rental.service.CarService;
+import com.rental.car_rental.service.MqttService;
+
 import lombok.RequiredArgsConstructor;
 
 import org.apache.catalina.connector.Response;
@@ -22,10 +25,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class CarController {
     private final CarService carService;
+    private final MqttService mqttService;
+    private final ObjectMapper objectMapper;
+    
 
     @PostMapping
     public ResponseEntity<Long> createCar(@RequestBody CarRequest carRequest) {
         Long id = carService.addCar(carRequest);
+
+        try {
+            String msg = objectMapper.writeValueAsString(carRequest);
+            mqttService.sendNotification("wypozyczalnia/auta", msg);
+        } catch (Exception error) {
+            System.err.println(error);
+        }
         
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
